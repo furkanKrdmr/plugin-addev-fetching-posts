@@ -13,42 +13,32 @@ Text Domain:
 
 defined( 'ABSPATH' ) || die();
 
-//needed to display the plugin on the admin sidebar
-add_action('admin_menu','addAdminPageContent');
-if (!function_exists('addAdminPageContent')){
-    function addAdminPageContent() {
-    add_menu_page('Services Status','Services Status','manage_options',__FILE__,'test123','dashicons-wordpress');
-    }
-}
-
- function getPostInfo(string $arg)
- {
-        $args = array (
-     'showposts' => '1',
-     'category_name' => 'Top Content'
-     );
-     $query = new WP_QUERY($args);
-     if ($query->have_posts()) {
-         while ($query->have_posts()) {
-             $query->the_post();
-             echo $arg();
-             }
-         }
-     return wp_reset_postdata();
- }
-
-function storeContent(){
-    ?>
+function contentHtml(){
+  $args = array (
+        'showposts' => '1',
+        'category_name' => 'Top Content'
+        );
+        $query = new WP_QUERY($args);
+        if ($query->have_posts()) {
+            while ($query->have_posts()) {
+                $query->the_post();
+                foreach ((get_the_category()) as $category) {
+                   $catName = $category->cat_name . ' ';
+                     }
+               }
+            }
+  ?>
         <style>
             .container-actualites {
                 margin-top: 50px;
             }
-            .Top_Content_{
-                background-color: grey !important;
-            }
+			.date{
+				padding: 10px;
+			}
     
             .Non_classé_{
                 background-color: aqua;
+				padding: 10px
             }
             .post {
                 height: 400px;
@@ -106,8 +96,9 @@ function storeContent(){
     
             .etiquette {
                 background-color: forestgreen;
-                width: 74px;
+                width: 107px;
                 height: 25px;
+				padding: 10px;
             }
     
             .container-icon-post-top {
@@ -181,18 +172,19 @@ function storeContent(){
                         </div>
                         <div class="container-bloc-post-top p-0 col-6 flex-column">
                             <div class="container-etiquette-post-top d-flex">
-                                <div class="etiquette"></div>
+                                <div class="etiquette"><?php echo $catName; ?></div>
                                 <div class="date">
                                     <?php
-                                    echo getPostInfo('the_date');
+                                    echo the_date();
                                     ?>
                                 </div>
                             </div>
                             <div class="container-p-post-top">
                                 <p class="p-in-post-top text-center">
                                     <?php
-                                    echo getPostInfo('get_the_title');
-                                    ?>
+                                    echo get_the_title();
+									
+									wp_reset_postdata();?>
                                 </p>
                             </div>
     
@@ -290,11 +282,13 @@ function storeContent(){
                 </div>
             </div>
         </div>
+
 <?php
 };
 
+
 function displayContent(){
-    $showContent = storeContent();
+    $showContent = contentHtml();
     return $showContent;
 }
 
